@@ -1,0 +1,76 @@
+# needed for library data simulation config file
+
+SIMTYPE pop
+
+# random seed for data simulation
+RAND 12
+
+# Each model needs its own file showing the penetrance table
+# use keyword and then number of model files after
+# followed by fraction of individuals determined using this
+# model (total should be 1.0).
+# If you want all status to be randomly assigned,
+# remove or comment out all the MODELFILES and
+# set MODELFILES to 0.
+MODELFILES 1
+sample.smod 1.0
+
+# percentage of error in genotypes
+GENOTYPEERROR 0.0
+
+# fraction of affected that are due to environmental factors
+PHENOCOPY 0.0
+
+# number of datasets
+SIMSETS 4
+
+# population size
+POPSIZE 4000
+
+# number of generations to simulate
+NUMGENS 10
+
+# writes a file after each generation specified 
+# also writes a file after last file
+CHECKPOINT 2 7
+
+# number of genes to simulate
+GENES 20
+
+# population type 
+# either chrom or ind
+# chrom -- Uses a chromosomal pool for crossing
+# ind -- Individuals cross and all chromosomes are always part of the inds
+POPTYPE chrom
+
+# minimum number of SNPs per gene
+# if want every gene to have same number of SNPs make MINSNP and MAXSNP equal
+MINSNP 5
+
+# maximum number of SNPs per gene
+MAXSNP 5
+
+# minimum recombination rate between SNPS in a gene
+MINRECOMB 0.005
+
+# maximum recombination rate between SNPs in a gene
+MAXRECOMB 0.05
+
+# For setting random allele frequencies
+# list minor allele frequency minimum and maximum
+# when this isn't set then use DEFAULTALLELE to make
+# every allele that isn't listed under ALLELEFREQS the same
+ALLELELIMITS 0.05 0.5
+
+# Default allele Frequencies (use if not using random allele freqs)
+# this only applies if ALLELELIMITS is commented out or missing 
+# in the file
+DEFAULTALLELE   0.5 0.5
+
+# for specified allele frequencies 
+# first is locus (start with 0) followed by major and minor allele frequencies
+# should specify frequencies for the disease allele loci in model files
+# the numbers refer to the SNP and not gene
+ALLELEFREQS
+5 0.8 0.2
+10 0.8 0.2

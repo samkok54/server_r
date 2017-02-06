@@ -1,0 +1,463 @@
+Manual: genomeSIM
+
+10/09/06
+
+1.  Introduction
+2.  Examples
+    a.  population-based simulation
+    b.  probability-based simulation
+3.  Input files
+    a.  configuration file
+    b.  penetrance table file
+4.  Algorithms
+    a.  population-based
+    b.  probability-based
+5.  Sample files
+    a.  input
+    b.  output
+
+
+1.  Introduction
+
+    The program genomeSIM is a genotype data simulator.  It can simulate
+    large-scale genomic data in case-control samples.  genomeSIM utilizes 
+    two different methods to generate case-control datasets.  
+    
+    An initial population can be generated on the basis of allele frequencies 
+    of the SNPs and then further generations are created by crossing the 
+    members of successive generations.  The simulator assigns affection 
+    status only after a specified number of generations.  The end result 
+    is a population-dependent number of cases and controls produced from 
+    a known number of generations.  
+    
+    Alternatively, the simulator can construct a case-control dataset by 
+    generating individuals as above, assigning affection status, and 
+    selecting cases and controls until the dataset is complete.  In this 
+    method, the initial population is increased in size (without crossing) 
+    until the desired dataset is created.  
+
+2. Examples
+
+    genomeSIM takes 2 arguments.  The first is the name of the configuration file
+    and the second is the base name to use in creating output files.  Sample 
+    files are at the end of this document.  To run the examples, enter the 
+    example directory and run the executable:
+    
+    ../bin/genomeSIM population.datasim NewPopData
+    
+    ../bin/genomeSIM prob.datasim NewProbData
+
+a.  Run genomeSIM to produce a dataset that undergoes generations.  In this case
+    4000 individuals will undergo 100 generations.  The genome
+    will consist of 20 genes that have 5 SNPs per gene for a total of 100 loci.
+    SNPs will have a recombination rate between .005 and .05 and have minor
+    allele frequencies between 0.05 and 0.5.  The penetrance model is 
+    contained in the file sample.smod and all individuals will have their
+    status set by it.  The specific frequencies for the penetrance model
+    are listed under the ALLELEFREQS keyword.
+
+    Command:
+    genomeSIM population.datasim NewPopData
+    
+    Input file parameters:
+
+    SIMTYPE pop
+    SIMSETS 1
+    RAND 12
+    MODELFILES 1
+    sample.smod 1.0
+    GENOTYPEERROR 0.0
+    PHENOCOPY 0.0
+    SIMSETS 1
+    POPSIZE 4000
+    NUMGENS 100
+    CHECKPOINT 50 
+    GENES 20
+    MINSNP 5
+    MAXSNP 5
+    MINRECOMB 0.005
+    MAXRECOMB 0.05
+    POPTYPE chrom
+    ALLELELIMITS 0.05 0.5
+    ALLELEFREQS
+    5 0.8 0.2
+    10 0.8 0.2
+   
+    
+    Output files:
+    NewPopData.1.50.out  --> checkpoint genotype file
+    NewPopData.1.100.out --> final genotype output file
+    NewPopData.loc       --> Lists the locus information:  allele 
+                              frequencies and recombination fraction
+
+           
+b.  Running genomeSIM to produce a dataset using only allele frequencies.  It will
+    contain 500 cases and 500 controls with status determined by the penetrance
+    model contained in sample.smod.  100 loci will be simulated with minor allele
+    frequencies between 0.05 and 0.5.  Loci 5 and 10 are the penetrance model loci
+    and have their frequencies specifically set to match the penetrance model.
+    
+    Command:
+    genomeSIM prob.datasim NewProbData
+
+    Input file parameters:
+    
+    SIMTYPE prob
+    SIMSETS 1
+    RAND 12
+    MODELFILES 1
+    sample.smod 1.0
+    GENOTYPEERROR 0.00
+    PHENOCOPY 0.0
+    AFFECTED 500
+    UNAFFECTED 500
+    SIMLOCI 100
+    TRIOS OFF   
+    ALLELELIMITS 0.05 0.5
+    ALLELEFREQS
+    5  0.8 0.2
+    10 0.8 0.2
+
+    Output files:
+    NewProbData.1.out  -->  genotype output file
+    NewProbData.loc  -->  Lists the locus information:  allele frequencies
+    
+
+3.  Input files
+
+    The user must provide a configuration file listing the parameters for 
+    use in the program.  Parameters should be capitalized as shown below.  
+    Most parameters have default values as indicated.  All parameters should 
+    list the parameter name followed by one or more spaces and then the 
+    parameter values.  Each parameter should be on its own line.  If the 
+    simulation will be using a penetrance table to assign affection status, 
+    the user should provide a penetrance table file(s) with the parameters indicated.
+
+###########  genomeSIM file parameters ###########
+
+a.  General configuration file parameters
+
+Parameter     Default    Description
+---------     -------    -----------------    
+SIMTYPE          none    Specifies a population-based ('pop') or a 
+                         probability-based ('prob') simulation
+
+RAND             time    Set random seed 
+
+MODELFILES       none   Lists number of model files used.  The path to each
+                         model file should follow with one per line.  After
+                         the path, the fraction of individuals using this model
+                         should be listed.  An example where 2 model files have
+                         been used:
+                         MODELFILES 2
+                         /home/dudek/prob.1.smod 0.7
+                         /home/dudek/prob.2.smod 0.3
+                        
+GENOTYPEERROR     0.0    Genotype error rate in simulated data.
+
+PHENOCOPY         0.0    Phenocopy rate in simulated data.
+
+ALLELELIMITS     none    Sets the range of the minor allele frequency in a
+                         simulated SNP.  The frequencies for all loci not 
+                         listed in ALLELEFREQS will be set randomly using this
+                         range.  Used in both probability and 
+                         population based simulation.  When it is not used
+                         all SNPs will have the frequencies specified by the
+                         DEFAULTALLELE keyword below.                     
+
+DEFAULTALLELE 0.5 0.5    Default allele frequencies.  Used if ALLELELIMITS not
+                         set.
+
+ALLELEFREQS      none    Specifies the allele frequencies for individual SNPs
+                         in the simulation.  The penetrance model loci should
+                         be set here to match the frequencies used in generating
+                         the model.
+
+SIMSETS             1    Specifies number of data sets to be created.  Each set
+                         will have its own population output file created.
+
+
+
+##  Population-based sim configuration file parameters ##
+
+POPSIZE           200    Total size of the simulated population in a population
+                         based data simulation.  Ignored for probability based.
+                         
+NUMGENS            10    Number of generations for population based data 
+                         simulation to run.  Ignored for probability based.
+                         
+GENES               5    Number of genes to simulate in population based data
+                         data simulation.  Ignored for probability based.
+                         
+MINSNP              5    Minimum # of SNPs per gene in population based data
+                         simulation.  Ignored for probability based.
+                         
+MAXSNP              5    Maximum # of SNPs per gene in population based data
+                         simulation.  Ignored for probability based.
+                         
+MINRECOMB       0.005    Minimum recombination rate between SNPs in a gene
+                         for population based data simulation.  Ignored
+                         for probability based.
+                         
+MAXRECOMB        0.05    Maximum recombination rate between SNPs in a gene
+                         for population based data simulation.  Ignored
+                         for probability based.
+
+POPTYPE           ind    Specifies whether each population consists of 
+                         distinct individuals  who each have 2 chromosomes
+                         ('ind') or whether population consists of a pool 
+                         of chromosomes who cross to create a new pool 
+                         ('chrom')
+                         
+
+## Probability-based sim configuration file parameters ##
+
+
+AFFECTED          200    Number of affected individuals in a probability
+                         based dataset.
+                         
+UNAFFECTED        200    Number of affected individuals in a probability
+                         based dataset.
+                         
+SIMLOCI            20    Total number of loci in a simulated probability
+                         based dataset.  Only the loci in the simpen model
+                         will affect individual disease status.  Not used in 
+                         population based simulation.
+
+TRIOS             OFF    If 'ON', each individual will have 2 parents 
+                         constructed by passing one of the individuals
+                         alleles to each parent.  The second allele for
+                         the parent is determined using allele frequencies
+                         for the locus.  Ignored in population-based method.
+
+MAKEPEDTYPE premakeped   When trios are generated, the output will be either
+                         makeped or premakeped format as set by this keyword.
+                         Ignored in population-based method.
+
+
+
+b. Penetrance model file parameters
+
+DISEASELOCI      none    Specifies which loci are set as the penetrance 
+                         model loci in the simulation
+                         
+PENTABLE         none    Specifies the penetrance value for each genotype
+                         in the penetrance table.  Loci use uppercase letters
+                         to represent each locus, so a 3 locus model would
+                         have the genotypes AABBCC, AABBCc, AABBcc, etc.
+                         Each penetrance value should be specified after
+                         the corresponding genotype. (AABBCC 0.010)
+                         
+
+4. Algorithms
+
+  a.  Population-based simulation
+      
+      As a first step, genomeSIM establishes the genome based on the parameters
+      in the configuration file.  Keyword GENES specifies the number of genes
+      and MINSNP and MAXSNP set the range for the number of SNPs in each gene.
+      The simulator then sets the recombination fraction between each SNP
+      based on the MINRECOMB and MAXRECOMB values.  All recombination frequencies
+      are random and independent.  SNPs are unlinked across genes.
+      
+      genomeSIM then creates an initial population using the genome created
+      above.  The POPTYPE keyword controls the type and behavior of the
+      population.  If 'ind' is set, the population consists of individuals
+      containing two chromosomes.  Crossing individuals leads to the
+      creation of new individuals for the next generation.  If 'chrom' is set,
+      the population consists of a pool of chromosomes.  In this case,
+      the crosses are conducted between chromosomes that are selected 
+      randomly with replacement.  Each cross produces one new chromosome
+      for the next generation pool.
+      
+      In either case, genomeSIM selects one of the 2 chromosomes being
+      crossed as the start chromosome and begins copying alleles to the 
+      new chromosome.  At every interval between loci, the simulator
+      checks the recombination rate against a random number.  If the random
+      number is less than the rate, the program switches to the other
+      chromosome to copy alleles.  
+      
+      In each type of population, the size of the population does not vary.
+      The simulator continues generating new generations up to the specified
+      limit in NUMGENS.  After the last generation, in a 'chrom' population,
+      individuals are created by randomly selecting with replacement two
+      chromosomes for the pool.  In both types of populations, the penetrance
+      table is used to assign affection status by applying a random value
+      to the value in the appropriate genotype for the disease loci.
+
+
+  b.  Probability-based simulation
+  
+      In this simulation, genomeSIM establishes the genome based on the 
+      parameters in the configuration file.  Keyword SIMLOCI specifies
+      the number of SNPs to create.  Allele frequencies are set either
+      within the range specified by ALLELELIMITS or, if absent, every
+      SNP has the frequencies listed by DEFAULTALLLE.  Specific SNP
+      allele frequencies are set by the ALLELEFREQS keyword.
+      
+      genomeSIM then produces individuals until it has the number of
+      AFFECTED and UNAFFECTED requested.  Every individual has its
+      genotype checked against the penetrance table to assign affection
+      status.
+  
+  
+
+5.  Sample files
+
+a.  Input files
+    
+    The program takes two types of input files: configuration (.datasim) 
+    and penetrance table file (.smod).
+
+
+.smod file -- The smod file is used in the data simulation software.  Every
+model simulated produces a smod file.  The number of the model is incorporated
+into the file name.
+
+
+# specify which loci are disease loci
+DISEASELOCI 5 10
+
+# Frequencies used in creating this model: 0.8 0.2
+PENTABLE
+AABB 0.020
+AABb 0.070
+AAbb 0.000
+AaBB 0.042
+AaBb 0.360
+Aabb 0.600
+aaBB 0.095
+aaBb 0.026
+aabb 0.896
+
+
+
+.datasim file -- Also used by the data simulation software.  The file lists
+all the parameters necessary for producing a dataset with the model specified
+in the file.  
+
+SIMTYPE prob
+SIMSETS 1
+RAND 12
+MODELFILES 1
+sample.smod 1.0
+GENOTYPEERROR 0.00
+PHENOCOPY 0.0
+AFFECTED 1000
+UNAFFECTED 1000
+SIMLOCI 100
+TRIOS OFF   
+ALLELELIMITS 0..05 0.5
+ALLELEFREQS
+5  0.8 0.2
+10 0.8 0.2
+
+
+b.  Ouput files
+
+    The program produces multiple output files.  If trios are produced, 
+    the genotypes are put into either makeped (.ped) or pre-makeped 
+    (.pre) format files.  In all other cases the genotype output is in the 
+    standard genoSIM file (.out).  If trios are produced, the locus
+    information is placed in the .dat format.  In all other cases,
+    the locus information is placed into a .loc file.
+    
+    The genotype output files have the set number added to the output name.
+    If multiple generations have been simulated the generations completed
+    is also added.  sample.1.20.out is the first set and the output is based
+    on 20 generations.
+
+.out file -- Standard genoSIM genotype data output file.  The first column is 
+affection status (1=affected) and all other columns are genotypes.
+
+1 1 1 0 1 1 1 0 0 1 0
+1 1 1 0 1 0 0 0 0 0 0
+1 0 1 1 1 0 1 1 1 1 1
+0 0 1 0 1 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0
+1 1 1 0 1 0 0 0 1 1 1
+0 1 0 1 1 0 0 0 0 0 0
+0 0 2 0 1 0 0 1 0 0 1
+1 0 2 0 1 0 0 1 0 0 0
+1 0 0 0 0 0 0 0 1 0 0
+
+.ped file -- makeped format file optionally produced when trios are generated.
+
+1 1 0 0 3 0 0 2 0 0 1 2 1 1 1 2 1 2 1 2 1 2 1 1 1 2 1 1 1 1 
+1 2 0 0 3 0 0 1 0 0 1 1 1 1 1 2 1 2 2 2 2 2 1 2 1 2 1 2 1 2 
+1 3 2 1 0 0 0 1 1 1 1 1 1 1 1 2 1 2 2 2 2 2 1 1 2 2 1 2 1 1 
+2 1 0 0 3 0 0 2 0 0 1 1 1 1 1 1 1 2 2 2 1 2 1 1 1 1 1 2 2 2 
+2 2 0 0 3 0 0 1 0 0 1 1 1 2 1 1 1 1 2 2 1 1 1 1 1 1 1 2 2 2 
+2 3 2 1 0 0 0 1 1 1 1 1 1 2 1 1 1 2 2 2 1 1 1 1 1 1 1 2 2 2 
+3 1 0 0 3 0 0 2 0 0 1 2 1 2 1 2 1 1 2 2 1 2 1 1 1 2 1 2 1 2 
+3 2 0 0 3 0 0 1 0 0 1 1 1 2 1 1 1 1 1 2 2 2 1 2 1 2 1 2 1 2 
+3 3 2 1 0 0 0 1 1 1 1 1 1 2 1 2 1 1 2 2 1 2 1 2 1 1 1 2 2 2 
+
+
+.pre file -- pre-makeped format file optionally produced when trios are
+generated.
+
+1 1 0 0 2 0 1 2 1 1 1 2 1 2 1 2 1 2 1 1 1 2 1 1 1 1
+1 2 0 0 1 0 1 1 1 1 1 2 1 2 2 2 2 2 1 2 1 2 1 2 1 2
+1 3 2 1 1 1 1 1 1 1 1 2 1 2 2 2 2 2 1 1 2 2 1 2 1 1
+2 1 0 0 2 0 1 1 1 1 1 1 1 2 2 2 1 2 1 1 1 1 1 2 2 2
+2 2 0 0 1 0 1 1 1 2 1 1 1 1 2 2 1 1 1 1 1 1 1 2 2 2
+2 3 2 1 1 1 1 1 1 2 1 1 1 2 2 2 1 1 1 1 1 1 1 2 2 2
+3 1 0 0 2 0 1 2 1 2 1 2 1 1 2 2 1 2 1 1 1 2 1 2 1 2
+3 2 0 0 1 0 1 1 1 2 1 1 1 1 1 2 2 2 1 2 1 2 1 2 1 2
+3 3 2 1 1 1 1 1 1 2 1 2 1 1 2 2 1 2 1 2 1 1 1 2 2 2
+
+
+.loc file -- Only produced when data are simulated.  Displays the allele 
+frequencies and the recombination fraction for the loci used in the simulation.
+The recombination fractions for loci used in a probability based simulation
+are zero.
+
+Loc All1 All2 Recomb
+  0 0.75 0.25 0.500
+  1 0.82 0.18 0.010
+  2 0.86 0.14 0.029
+  3 0.70 0.30 0.015
+  4 0.80 0.20 0.500
+  5 0.53 0.47 0.015
+  6 0.63 0.37 0.032
+  7 0.85 0.15 0.050
+  8 0.93 0.07 0.500
+  9 0.80 0.20 0.027
+                                                                        
+
+
+.dat file -- Standard format file in LINKAGE format describing loci 
+information.  Used with trios production.
+
+11 0 0 5
+0 0.0 0.0 0
+0 1 2 3 4 5 6 7 8 9 10
+1  2 #MODEL
+0.9900 0.0100
+   1
+0       0       1
+3 2 #LOC1
+0.734961 0.265039
+3 2 #LOC2
+0.665732 0.334268
+3 2 #LOC3
+0.652215 0.347785
+3 2 #LOC4
+0.62919 0.37081
+3 2 #LOC5
+0.1 0.9
+3 2 #LOC6
+0.657864 0.342136
+3 2 #LOC7
+0.657524 0.342476
+3 2 #LOC8
+0.789902 0.210098
+3 2 #LOC9
+0.513788 0.486212
+3 2 #LOC10
+0.4 0.6
+0 0
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+1 0.050 0.150
+0.200 0.100 0.400

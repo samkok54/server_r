@@ -1,0 +1,22 @@
+genomeSIM README
+
+10/09/06
+
+The executable in this package was compiled on a machine running
+Red Hat Enterprise Linux WS release 3 (Taroon Update 8) with dual
+Intel(R) Xeon(TM) CPU 3.06GHz processors. 
+
+If this executable doesn't work on your system, you may create a
+new version by typing make in the src directory.  The 
+new version will be in the bin directory.
+
+Sample files are provided in the example directory.  Enter that
+directory and try the examples:
+
+../bin/genomeSIM population.datasim NewPopData
+
+../bin/genomeSIM prob.datasim NewProbData
+
+Descriptions of the parameters in the configuration file can be
+found in the manual in the doc directoy.
+

@@ -1,0 +1,19 @@
+# any comments can be like this
+# loci need to start with letter A and so on
+
+# list of disease loci in genome (start with 1)
+DISEASELOCI 1 2
+
+# penetrance values
+# all penetrances must follow the keyword
+# first locus should be A followed by B etc.
+PENTABLE 
+AABB 0.020
+AABb 0.070
+AAbb 0.000
+AaBB 0.042
+AaBb 0.360
+Aabb 0.600
+aaBB 0.095
+aaBb 0.026
+aabb 0.896

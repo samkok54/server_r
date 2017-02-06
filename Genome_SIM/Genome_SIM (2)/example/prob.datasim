@@ -1,0 +1,61 @@
+# needed for library data simulation config file
+
+SIMTYPE prob
+
+# random seed for data simulation
+RAND 1234
+
+SIMSETS 2
+
+# Each model needs its own file showing the penetrance table
+# use keyword and then number of model files after
+# followed by fraction of individuals determined using this
+# model (total should be 1.0).
+# If you want all status to be randomly assigned,
+# remove or comment out all the MODELFILES and
+# set MODELFILES to 0.
+MODELFILES 1
+/home/dudeksm/lab/datasim/example/sample.smod 1.0
+
+# percentage of error in genotypes
+GENOTYPEERROR 0.00
+
+# fraction of affected that are due to environmental factors
+PHENOCOPY 0.0
+
+# number of affected to simulate
+AFFECTED 200
+# AFFECTED 1000
+
+# unaffected to simulate
+UNAFFECTED 200
+# UNAFFECTED 1000
+
+# total number of loci to simulate
+SIMLOCI 20
+
+# generate parents
+# TRIOS ON
+
+# output format
+#MAKEPED premakeped
+
+# For setting random allele frequencies
+# list minor allele frequency minimum and maximum
+# when this isn't set then use DEFAULTALLELE to make
+# every allele that isn't listed under ALLELEFREQS the same
+ALLELELIMITS 0.2 0.5
+
+# Default allele Frequencies (use if not using random allele freqs)
+# this only applies if ALLELELIMITS is commented out or missing 
+# in the file
+DEFAULTALLELE   0.5 0.5
+
+# for specified allele frequencies 
+# first is locus (start with 0) followed by major and minor
+# allele frequencies
+# should specify frequencies for the disease allele
+# loci in model files
+ALLELEFREQS
+1 0.7 0.3
+2 0.5 0.5
